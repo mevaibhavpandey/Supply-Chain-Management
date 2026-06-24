@@ -19,10 +19,11 @@ import os
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from config import settings
+from database import AsyncSessionLocal
 from models import ValidationRun, TrustScore, Finding, Recommendation, Evidence, AIInsight
 from engine.repo_ingestor import RepoIngestor
 from engine.static_analyzer import StaticAnalyzer
@@ -34,13 +35,8 @@ from engine.llm_insights import LLMInsightsEngine
 
 logger = logging.getLogger(__name__)
 
-# Create a separate DB engine for background tasks (not tied to request lifecycle)
-_bg_engine = create_async_engine(
-    settings.database_url,
-    echo=False,
-    connect_args={"check_same_thread": False}
-)
-_bg_session_factory = async_sessionmaker(_bg_engine, expire_on_commit=False)
+# Use the centralized database session factory (configured for PostgreSQL/SQLite with SSL support)
+_bg_session_factory = AsyncSessionLocal
 
 
 async def _update_run_status(
