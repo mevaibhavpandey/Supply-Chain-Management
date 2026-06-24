@@ -37,6 +37,26 @@ async def get_db():
         finally:
             await session.close()
 
+import asyncio
+import logging
+
+db_logger = logging.getLogger(__name__)
+
 async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    retries = 6
+    delay = 5
+    for attempt in range(1, retries + 1):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            db_logger.info("Database tables created/verified successfully.")
+            return
+        except Exception as e:
+            if attempt == retries:
+                db_logger.critical("Could not connect to database. All retries exhausted.")
+                raise e
+            db_logger.warning(
+                f"Database connection attempt {attempt} failed: {e}. Retrying in {delay} seconds..."
+            )
+            await asyncio.sleep(delay)
+
