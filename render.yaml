@@ -1,0 +1,36 @@
+databases:
+  - name: trust-validator-db
+    databaseName: trust_validator
+    user: trust_admin
+    plan: free
+
+services:
+  - type: web
+    name: ai-trust-validator-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    rootDir: backend
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: trust-validator-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: '["*"]'
+      - key: LLM_ENABLED
+        value: false
+
+  - type: web
+    name: ai-trust-validator-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm run build
+    startCommand: npm run start
+    plan: free
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: ai-trust-validator-backend
+          type: web
+          property: host
