@@ -13,6 +13,10 @@ if db_url.startswith("postgres://"):
 elif db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+if db_url.startswith("postgresql+asyncpg://") and "ssl=" not in db_url:
+    db_url += ("&" if "?" in db_url else "?") + "ssl=require"
+
+
 engine_args = {}
 if db_url.startswith("sqlite"):
     engine_args["connect_args"] = {"check_same_thread": False}
