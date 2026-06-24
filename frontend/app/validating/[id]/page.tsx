@@ -66,7 +66,7 @@ export default function ValidatingPage({ params }: { params: Promise<{ id: strin
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [params.id, router]);
+  }, [id, router]);
 
   const progress = status?.progress ?? 0;
   const currentStepIdx = getStepIndex(progress);
