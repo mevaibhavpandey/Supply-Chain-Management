@@ -12,6 +12,8 @@
 
 AI Trust Validator is a customer-facing SaaS platform that validates SCM AI agents using a **deterministic-first scoring engine** across 6 trust dimensions. The same agent + same rules = the same score, always.
 
+Live Link- https://ai-trust-validator-frontend.onrender.com
+
 ### Key Features
 
 - **Deterministic Trust Score** — 18 rule-based checks, 6 weighted dimensions, reproducible results
